@@ -1,0 +1,4 @@
+type,sat_high,sat_med,sat_low
+tower,200,101,99
+apt,302,192,271
+house,166,197,153

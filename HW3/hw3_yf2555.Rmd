@@ -1,0 +1,189 @@
+---
+title: "P31 HW3"
+author: "Yihan Feng"
+date: "2/15/2021"
+output: pdf_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+## Question 1
+
+```{r include=FALSE}
+setwd("C:/Users/irene/OneDrive - cumc.columbia.edu/2021 M1 Spring/Biostatistical Methods 2/HW/HW3")
+```
+
+```{r  message=FALSE, warning=FALSE}
+alcohol = read_csv("./alcohol.csv") %>%
+  pivot_longer(
+    case_079:control_80,
+    names_to = "treatment",
+    values_to = "count"
+  ) %>%
+  separate(treatment, c("treatment", "consumption"), "_") %>%
+  pivot_wider(
+    names_from = treatment,
+    values_from = count
+  )
+```
+
+### a. Fit a prospective model to the data to study the relation between alcohol consumption, age, and disease (model age as a continuous variable taking values 25, 35, 45, 55, 65, and 75). Interpret the result.\
+
+```{r}
+case_control = cbind(alcohol$case, alcohol$control)
+
+alcohol.prosp = glm(data = alcohol, 
+                case_control ~ age + consumption, 
+                family = binomial(link = 'logit'))
+summary(alcohol.prosp)
+```
+
+* The model doesn't fit well. The deviance of the model is `r deviance(alcohol.prosp)`, while chi-squared critical value is `r qchisq(0.95, alcohol.prosp$df.residual)`. Therefore, we reject the null hypothesis, and conclude that the model doesn't fit well. 
+
+* The odds ratio of disease between exposed and non-exposed group is `r exp(alcohol.prosp$coefficients[2])` for one unit change in age. And the 95% confidence interval is  (`r exp(alcohol.prosp$coefficient[2]+c(qnorm(0.025),-qnorm(0.025))*sqrt(vcov(alcohol.prosp)[2,2]))`). 
+
+* The odds ratio of disease between exposed and non-exposed group is `r exp(alcohol.prosp$coefficients[3])` for one unit change in alcohol consumption.And the 95% confidence interval is  (`r exp(alcohol.prosp$coefficient[3]+c(qnorm(0.025),-qnorm(0.025))*sqrt(vcov(alcohol.prosp)[3,3]))`).
+
+
+\newpage
+
+
+### b. 
+
+$M_0$: smaller model. 
+  $log(\pi_i/(1-\pi_i)) = \beta_0 + \beta_1 * age_2 + \beta_2 * age_3 + ... + \beta_5 * age_6$
+  $\beta_6$ (coefficient for alcohol consumption)= 0, which implies that the disease is not related to alcohol consumption. 
+
+$M_1$: larger model. 
+    $log(\pi_i/(1-\pi_i)) = \beta_0 + \beta_1 * age_2 + \beta_2 * age_3 + ... + \beta_5 * age_6 + \beta_6 * alcohol$
+
+```{r include=FALSE}
+alcohol.b = read_csv("./alcohol_b.csv") %>%
+  pivot_longer(
+    case_079:control_80,
+    names_to = "treatment",
+    values_to = "count"
+  ) %>%
+  separate(treatment, c("treatment", "consumption"), "_") %>%
+  pivot_wider(
+    names_from = treatment,
+    values_from = count
+  )
+```
+
+```{r}
+alcohol.small = glm(
+  data = alcohol.b,
+  case_control ~ age,
+  family = binomial(link = "logit")
+)
+summary(alcohol.small)
+```
+
+```{r}
+alcohol.large = glm(
+  data = alcohol.b,
+  case_control ~ age + consumption,
+  family = binomial(link = "logit")
+)
+summary(alcohol.large)
+```
+
+```{r}
+alcohol.dev = deviance(alcohol.small) - deviance(alcohol.large)
+alcohol.chi = qchisq(0.95, (1))
+```
+
+The difference of deviance between $M_0$ and $M_1$ is `r alcohol.dev`, which is greater than the chi-squared distribution with degree freedom of 1 (7 parameters - 6 parameters) `r alcohol.chi`. Therefore, it is able to reject the null hypothesis/$M_0$. 
+
+\newpage
+
+
+## Question 2
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+germ.df =
+  tibble(
+    germinating = c(10, 23, 23, 26, 17),
+    nseed = c(39, 62, 81, 51, 39),
+    seed = rep("bean", 5),
+    root = rep("oa_75", 5)
+  ) %>%
+  rbind(tibble(
+    germinating = c(5, 53, 55, 32, 46, 10),
+    nseed = c(6, 74, 72, 51, 79, 13),
+    seed = rep("cucumber", 6),
+    root = rep("oa_75", 6)
+  )) %>%
+  rbind(tibble(
+    germinating = c(8, 10, 8, 23, 0),
+    nseed = c(16, 30, 28, 45, 4),
+    seed = rep("bean", 5),
+    root = rep("oa_73", 5)
+  )) %>%
+  rbind(tibble(
+    germinating = c(3, 22, 15, 32, 3),
+    nseed = c(12, 41, 30, 51, 7),
+    seed = rep("cucumber", 5),
+    root = rep("oa_73", 5)
+  ))
+germ.df %>% 
+  group_by(root,seed) %>% 
+  summarise(values = germinating/nseed) %>% 
+  pivot_wider(names_from = c(root, seed),
+              values_from = values)
+```
+
+
+### a. Fit a logistic regression model to study the relation between germination rates and different types of seed and root extract. Interpret the result.
+
+
+```{r, Q2/a, message=FALSE, warning=FALSE}
+germ.model = glm(data = germ.df,
+                 cbind(germinating, nseed - germinating) ~ seed + root,
+                 family = binomial(link = 'logit'))
+summary(germ.model)
+```
+
+* The model doesn't fit well. The deviance of the model is `r deviance(germ.model)`, while chi-squared critical value with degree of freedom 9 is `r qchisq(0.95, germ.model$df.residual)`. Therefore, we reject the null hypothesis, and conclude that the model doesn't fit well. 
+
+* The odds ratio of germination is `r exp(germ.model$coefficients[2])` between bean and cucumber. And the 95% confidence interval is  (`r exp(germ.model$coefficient[2]+c(qnorm(0.025),-qnorm(0.025))*sqrt(vcov(germ.model)[2,2]))`). 
+
+* The odds ratio of germination is `r exp(germ.model$coefficients[3])` between O. aegyptiaca 75 and O. aegyptiaca 73. And the 95% confidence interval is  (`r exp(germ.model$coefficient[3]+c(qnorm(0.025),-qnorm(0.025))*sqrt(vcov(germ.model)[3,3]))`). 
+
+\newpage
+
+### b. Is there over dispersion? If so, what is the estimate of dispersion parameter? Update your model and reinterpret the result.\
+
+```{r, Q2/b1, message=FALSE, warning=FALSE}
+G.stat=sum(residuals(germ.model,type = 'pearson')^2)
+
+germ_row = nrow(germ.df)
+phi = G.stat/(germ_row - 3)
+```
+
+There is over dispersion in this model. The estimate of dispersion parameter $\phi$ is `r round(phi, 3)`. 
+
+##### updated model: 
+
+```{r, Q2/b2, message=FALSE, warning=FALSE}
+summary(germ.model, dispersion = phi)
+```
+
+* The model doesn't fit well. The deviance of the model is `r deviance(germ.model)`, while chi-squared critical value with degree of freedom 9 is `r qchisq(0.95, germ.model$df.residual)`. Therefore, we reject the null hypothesis, and conclude that the model doesn't fit well. 
+
+* The odds ratio of germination is `r exp(germ.model$coefficients[2])` between bean and cucumber. And the 95% confidence interval is (`r exp(summary(germ.model,dispersion = phi)$coefficient[2]+c(qnorm(0.025),-qnorm(0.025))*sqrt(vcov(summary(germ.model,dispersion = phi))[2,2]))`). 
+
+* The odds ratio of germination is `r exp(germ.model$coefficients[3])` between O. aegyptiaca 75 and O. aegyptiaca 73. And the 95% confidence interval is (`r exp(summary(germ.model,dispersion = phi)$coefficient[3]+c(qnorm(0.025),-qnorm(0.025))*sqrt(vcov(summary(germ.model,dispersion = phi))[3,3]))`). 
+
+\newpage
+
+### c. What is a plausible cause of the over dispersion?\
+
+The plausible cause of the over dispersion can be the violation of Bernoulli trial assumptions, which are: 
+1. underlying independent trials. \
+2. each trial should have same probability of success.\
+
+In this problem, it might be the potential correlation that the trials are not independent. For example, the germination has impact on its neighbor. Also, the germination rate could be different, because there might be unobserved material in the soil. 

@@ -1,0 +1,378 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={P8131 Assignment 2},
+  pdfauthor={Yihan Feng (yf2555)},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{P8131 Assignment 2}
+\author{Yihan Feng (yf2555)}
+\date{2/9/2021}
+
+\begin{document}
+\maketitle
+
+\hypertarget{problem-1}{%
+\section{Problem 1}\label{problem-1}}
+
+\hypertarget{a.-fill-out-the-table-and-give-comments.}{%
+\subsubsection{a. Fill out the table and give
+comments.}\label{a.-fill-out-the-table-and-give-comments.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# fit models}
+\NormalTok{fit_logit =}\StringTok{ }\KeywordTok{glm}\NormalTok{(dying_alive }\OperatorTok{~}\StringTok{ }\NormalTok{dose, }\DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{'logit'}\NormalTok{))}
+\NormalTok{fit_probit =}\StringTok{ }\KeywordTok{glm}\NormalTok{(dying_alive }\OperatorTok{~}\StringTok{ }\NormalTok{dose, }\DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{'probit'}\NormalTok{))}
+\NormalTok{fit_clog =}\StringTok{ }\KeywordTok{glm}\NormalTok{(dying_alive }\OperatorTok{~}\StringTok{ }\NormalTok{dose, }\DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{'cloglog'}\NormalTok{))}
+
+\CommentTok{# CI for beta}
+\NormalTok{ci_logit =}\StringTok{ }\NormalTok{fit_logit }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{broom}\OperatorTok{::}\KeywordTok{tidy}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{lower =}\NormalTok{ estimate }\OperatorTok{-}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{std.error,}
+        \DataTypeTok{upper =}\NormalTok{ estimate }\OperatorTok{+}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{std.error) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{select}\NormalTok{(term, estimate, lower, upper) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{filter}\NormalTok{(term }\OperatorTok{==}\StringTok{ "dose"}\NormalTok{)}
+
+\NormalTok{ci_probit =}\StringTok{ }\NormalTok{fit_probit }\OperatorTok{%>%}
+\StringTok{ }\NormalTok{broom}\OperatorTok{::}\KeywordTok{tidy}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{lower =}\NormalTok{ estimate }\OperatorTok{-}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{std.error,}
+        \DataTypeTok{upper =}\NormalTok{ estimate }\OperatorTok{+}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{std.error) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{select}\NormalTok{(term, estimate, lower, upper) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{filter}\NormalTok{(term }\OperatorTok{==}\StringTok{ "dose"}\NormalTok{)}
+ 
+\NormalTok{ci_clog =}\StringTok{ }\NormalTok{fit_clog }\OperatorTok{%>%}
+\StringTok{ }\NormalTok{broom}\OperatorTok{::}\KeywordTok{tidy}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{lower =}\NormalTok{ estimate }\OperatorTok{-}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{std.error,}
+        \DataTypeTok{upper =}\NormalTok{ estimate }\OperatorTok{+}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{std.error) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{select}\NormalTok{(term, estimate, lower, upper) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{filter}\NormalTok{(term }\OperatorTok{==}\StringTok{ "dose"}\NormalTok{)}
+ 
+\CommentTok{# p(dying|x=0.01)}
+\NormalTok{new_dose <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{dose =} \FloatTok{0.01}\NormalTok{)}
+
+\NormalTok{predict_logit =}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit_logit, new_dose, }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
+\NormalTok{predict_probit =}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit_probit, new_dose, }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
+\NormalTok{predict_clog =}\StringTok{ }\KeywordTok{predict}\NormalTok{(fit_clog, new_dose, }\DataTypeTok{type =} \StringTok{"response"}\NormalTok{)}
+
+\CommentTok{# set up the table}
+\NormalTok{table_a =}\StringTok{ }\KeywordTok{tibble}\NormalTok{(}
+ \DataTypeTok{model =} \KeywordTok{c}\NormalTok{(}\StringTok{"Logit"}\NormalTok{, }\StringTok{"Probit"}\NormalTok{, }\StringTok{"C-log-log"}\NormalTok{),}
+ \DataTypeTok{beta_estimate =} \KeywordTok{c}\NormalTok{(fit_logit}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{], fit_probit}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{], fit_clog}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{]),}
+ \DataTypeTok{beta_cI_lower =} \KeywordTok{c}\NormalTok{(ci_logit}\OperatorTok{$}\NormalTok{lower, ci_probit}\OperatorTok{$}\NormalTok{lower, ci_clog}\OperatorTok{$}\NormalTok{lower),}
+ \DataTypeTok{beta_CI_upper =} \KeywordTok{c}\NormalTok{(ci_logit}\OperatorTok{$}\NormalTok{upper, ci_probit}\OperatorTok{$}\NormalTok{upper, ci_clog}\OperatorTok{$}\NormalTok{upper),}
+ \DataTypeTok{Deviance =} \KeywordTok{c}\NormalTok{(fit_logit}\OperatorTok{$}\NormalTok{deviance, fit_probit}\OperatorTok{$}\NormalTok{deviance, fit_clog}\OperatorTok{$}\NormalTok{deviance),}
+ \DataTypeTok{p_dying_x_0.01 =} \KeywordTok{c}\NormalTok{(predict_logit, predict_probit, predict_clog)}
+\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(}\DataTypeTok{digits =} \DecValTok{3}\NormalTok{)}
+
+\NormalTok{table_a}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrrrr@{}}
+\toprule
+model & beta\_estimate & beta\_cI\_lower & beta\_CI\_upper & Deviance &
+p\_dying\_x\_0.01\tabularnewline
+\midrule
+\endhead
+Logit & 1.162 & 0.806 & 1.517 & 0.379 & 0.090\tabularnewline
+Probit & 0.686 & 0.497 & 0.876 & 0.314 & 0.085\tabularnewline
+C-log-log & 0.747 & 0.532 & 0.961 & 2.230 & 0.128\tabularnewline
+\bottomrule
+\end{longtable}
+
+According to the table, I noticed that:
+
+\begin{itemize}
+\item
+  All estimates of \(\beta\) are positive, which means that the risk of
+  dying increases with the increase of doses. The logit model has the
+  highest value, and the probit model has the lowest value.
+\item
+  All confidence intervals of \(\beta\) do not include zero, which
+  corresponds to the conclusion that the risk of dying increases with
+  the increase of doses.
+\item
+  The c-log-log model has the highest deviance, and the probit model has
+  the lowest deviance. It indicates that the logit and probit may better
+  fit the data set.
+\item
+  When the dose is decreased to 0.01, the three models provide similar
+  probabilities of dying.
+\end{itemize}
+
+\hypertarget{b.-suppose-that-the-dose-level-is-in-natural-logarithm-scale-estimate-ld50-with-90-confidence-interval}{%
+\subsubsection{b. Suppose that the dose level is in natural logarithm
+scale, estimate LD50 with 90\% confidence
+interval}\label{b.-suppose-that-the-dose-level-is-in-natural-logarithm-scale-estimate-ld50-with-90-confidence-interval}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#logit model}
+
+\NormalTok{logit_beta0 =}\StringTok{ }\NormalTok{fit_logit}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{1}\NormalTok{]}
+\NormalTok{logit_beta1 =}\StringTok{ }\NormalTok{fit_logit}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{]}
+\NormalTok{logit_betacov =}\StringTok{ }\KeywordTok{vcov}\NormalTok{(fit_logit)}
+\NormalTok{logit_x0fit =}\StringTok{ }\OperatorTok{-}\NormalTok{logit_beta0 }\OperatorTok{/}\StringTok{ }\NormalTok{logit_beta1}
+\NormalTok{logit_estimate =}\StringTok{ }\KeywordTok{exp}\NormalTok{(logit_x0fit)}
+\NormalTok{logit_varx0 =}\StringTok{ }\NormalTok{logit_betacov[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{] }\OperatorTok{/}\StringTok{ }\NormalTok{(logit_beta1}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{logit_betacov[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{(logit_beta0}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{(logit_beta1}\OperatorTok{^}\DecValTok{4}\NormalTok{) }\OperatorTok{-}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{logit_betacov[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{logit_beta0}\OperatorTok{/}\NormalTok{(logit_beta1}\OperatorTok{^}\DecValTok{3}\NormalTok{)}
+\NormalTok{logit_CI =}\StringTok{ }\KeywordTok{exp}\NormalTok{(logit_x0fit }\OperatorTok{+}\StringTok{ }\KeywordTok{c}\NormalTok{(}\KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.05}\NormalTok{), }\OperatorTok{-}\KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.05}\NormalTok{)) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(logit_varx0))}
+ 
+
+\CommentTok{#probit model}
+
+\NormalTok{probit_beta0 =}\StringTok{ }\NormalTok{fit_probit}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{1}\NormalTok{]}
+\NormalTok{probit_beta1 =}\StringTok{ }\NormalTok{fit_probit}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{]}
+\NormalTok{probit_betacov =}\StringTok{ }\KeywordTok{vcov}\NormalTok{(fit_probit)}
+\NormalTok{probit_x0fit =}\StringTok{ }\OperatorTok{-}\NormalTok{probit_beta0 }\OperatorTok{/}\StringTok{ }\NormalTok{probit_beta1}
+\NormalTok{probit_estimate =}\StringTok{ }\KeywordTok{exp}\NormalTok{(probit_x0fit) }
+\NormalTok{probit_varx0 =}\StringTok{ }\NormalTok{probit_betacov[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{] }\OperatorTok{/}\StringTok{ }\NormalTok{(probit_beta1}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{probit_betacov[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{(probit_beta0}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{(probit_beta1}\OperatorTok{^}\DecValTok{4}\NormalTok{) }\OperatorTok{-}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{probit_betacov[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{probit_beta0 }\OperatorTok{/}\StringTok{ }\NormalTok{(probit_beta1}\OperatorTok{^}\DecValTok{3}\NormalTok{)}
+\NormalTok{probit_CI =}\StringTok{ }\KeywordTok{exp}\NormalTok{(probit_x0fit }\OperatorTok{+}\StringTok{ }\KeywordTok{c}\NormalTok{(}\KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.05}\NormalTok{), }\OperatorTok{-}\KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.05}\NormalTok{)) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(probit_varx0))}
+
+
+\CommentTok{#cloglog model}
+
+\NormalTok{clog_beta0 =}\StringTok{ }\NormalTok{fit_clog}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{1}\NormalTok{]}
+\NormalTok{clog_beta1 =}\StringTok{ }\NormalTok{fit_clog}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{]}
+\NormalTok{clog_betacov =}\StringTok{ }\KeywordTok{vcov}\NormalTok{(fit_clog)}
+\NormalTok{clog_x0fit =}\StringTok{ }\OperatorTok{-}\NormalTok{clog_beta0 }\OperatorTok{/}\StringTok{ }\NormalTok{clog_beta1}
+\NormalTok{clog_estimate =}\StringTok{ }\KeywordTok{exp}\NormalTok{(clog_x0fit) }
+\NormalTok{clog_varx0 =}\StringTok{ }\NormalTok{clog_betacov[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{] }\OperatorTok{/}\StringTok{ }\NormalTok{(clog_beta1}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{clog_betacov[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{(clog_beta0}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{(clog_beta1}\OperatorTok{^}\DecValTok{4}\NormalTok{) }\OperatorTok{-}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{clog_betacov[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{] }\OperatorTok{*}\StringTok{ }\NormalTok{clog_beta0 }\OperatorTok{/}\StringTok{ }\NormalTok{(clog_beta1}\OperatorTok{^}\DecValTok{3}\NormalTok{)}
+\NormalTok{clog_CI =}\StringTok{ }\KeywordTok{exp}\NormalTok{(clog_x0fit }\OperatorTok{+}\StringTok{ }\KeywordTok{c}\NormalTok{(}\KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.05}\NormalTok{), }\OperatorTok{-}\KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.05}\NormalTok{)) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(clog_varx0))}
+
+
+\CommentTok{#set up table}
+\NormalTok{table_b =}\StringTok{ }\KeywordTok{tibble}\NormalTok{(}
+ \DataTypeTok{model =} \KeywordTok{c}\NormalTok{(}\StringTok{"Logit"}\NormalTok{, }\StringTok{"Probit"}\NormalTok{, }\StringTok{"C-log-log"}\NormalTok{),}
+ \DataTypeTok{beta_estimate =} \KeywordTok{c}\NormalTok{(logit_estimate, probit_estimate, clog_estimate),}
+ \DataTypeTok{beta_cI_lower =} \KeywordTok{c}\NormalTok{(logit_CI[}\DecValTok{1}\NormalTok{], probit_CI[}\DecValTok{1}\NormalTok{], clog_CI[}\DecValTok{1}\NormalTok{]),}
+ \DataTypeTok{beta_CI_upper =} \KeywordTok{c}\NormalTok{(logit_CI[}\DecValTok{2}\NormalTok{], probit_CI[}\DecValTok{2}\NormalTok{], clog_CI[}\DecValTok{2}\NormalTok{])}
+\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(}\DataTypeTok{digits =} \DecValTok{3}\NormalTok{)}
+
+\NormalTok{table_b}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule
+model & beta\_estimate & beta\_cI\_lower &
+beta\_CI\_upper\tabularnewline
+\midrule
+\endhead
+Logit & 7.389 & 5.510 & 9.910\tabularnewline
+Probit & 7.436 & 5.583 & 9.904\tabularnewline
+C-log-log & 14.443 & 10.841 & 19.241\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{problem-2}{%
+\subsection{Problem 2}\label{problem-2}}
+
+\hypertarget{a.-how-does-the-model-fit-the-data}{%
+\subsubsection{a. How does the model fit the
+data?}\label{a.-how-does-the-model-fit-the-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mph_df =}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{amount =} \KeywordTok{seq}\NormalTok{(}\DataTypeTok{from =} \DecValTok{10}\NormalTok{, }\DataTypeTok{to =} \DecValTok{90}\NormalTok{, }\DataTypeTok{by =} \DecValTok{5}\NormalTok{), }
+                      \DataTypeTok{offers =} \KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{39}\NormalTok{, }\DecValTok{36}\NormalTok{, }\DecValTok{22}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{), }
+                      \DataTypeTok{enrolls =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{14}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+
+\NormalTok{resp =}\StringTok{ }\KeywordTok{cbind}\NormalTok{(mph_df}\OperatorTok{$}\NormalTok{enrolls, mph_df}\OperatorTok{$}\NormalTok{offers }\OperatorTok{-}\StringTok{ }\NormalTok{mph_df}\OperatorTok{$}\NormalTok{enrolls)}
+
+\NormalTok{mph_fit =}\StringTok{ }\KeywordTok{glm}\NormalTok{(resp }\OperatorTok{~}\StringTok{ }\NormalTok{mph_df}\OperatorTok{$}\NormalTok{amount, }\DataTypeTok{family =} \KeywordTok{binomial}\NormalTok{(}\DataTypeTok{link =} \StringTok{'logit'}\NormalTok{))}
+\NormalTok{mph_hl =}\StringTok{ }\KeywordTok{hoslem.test}\NormalTok{(mph_fit}\OperatorTok{$}\NormalTok{y, }\KeywordTok{fitted}\NormalTok{(mph_fit), }\DataTypeTok{g =} \DecValTok{10}\NormalTok{)}
+
+\NormalTok{mph_hl}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Hosmer and Lemeshow goodness of fit (GOF) test
+## 
+## data:  mph_fit$y, fitted(mph_fit)
+## X-squared = 1.6111, df = 8, p-value = 0.9907
+\end{verbatim}
+
+From the Hosmer-Lemeshow test, the p value is 0.991 ( \textgreater0.05).
+Therefore, it fails to reject, and the model fit the data well.
+
+\hypertarget{b.-how-do-you-interpret-the-relationship-between-the-scholarship-amount-and-enrollment-rate-what-is-95-ci}{%
+\subsubsection{b. How do you interpret the relationship between the
+scholarship amount and enrollment rate? What is 95\%
+CI?}\label{b.-how-do-you-interpret-the-relationship-between-the-scholarship-amount-and-enrollment-rate-what-is-95-ci}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beta_mph =}\StringTok{ }\NormalTok{mph_fit}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{]}
+
+\NormalTok{ci_mph =}\StringTok{ }\NormalTok{mph_fit }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{broom}\OperatorTok{::}\KeywordTok{tidy}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{lower =}\NormalTok{ beta_mph }\OperatorTok{-}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{std.error,}
+        \DataTypeTok{upper =}\NormalTok{ beta_mph }\OperatorTok{+}\StringTok{ }\FloatTok{1.96} \OperatorTok{*}\StringTok{ }\NormalTok{std.error) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{select}\NormalTok{(term, estimate, lower, upper) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{filter}\NormalTok{(term }\OperatorTok{==}\StringTok{ "mph_df$amount"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(}\DataTypeTok{digits =} \DecValTok{3}\NormalTok{)}
+
+\NormalTok{ci_mph}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule
+term & estimate & lower & upper\tabularnewline
+\midrule
+\endhead
+mph\_df\$amount & 0.031 & 0.012 & 0.05\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{c.-how-much-scholarship-should-we-provide-to-get-40-yield-rate-what-is-the-95-ci}{%
+\subsubsection{c.~How much scholarship should we provide to get 40\%
+yield rate? What is the 95\%
+CI?}\label{c.-how-much-scholarship-should-we-provide-to-get-40-yield-rate-what-is-the-95-ci}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mph_beta0 =}\StringTok{ }\NormalTok{mph_fit}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{1}\NormalTok{]}
+\NormalTok{mph_beta1 =}\StringTok{ }\NormalTok{mph_fit}\OperatorTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{]}
+
+\NormalTok{mph_betacov =}\StringTok{ }\KeywordTok{vcov}\NormalTok{(mph_fit) }
+
+\NormalTok{mph_x0fit =}\StringTok{ }\NormalTok{(}\KeywordTok{log}\NormalTok{(}\FloatTok{0.4}\OperatorTok{/}\FloatTok{0.6}\NormalTok{) }\OperatorTok{-}\StringTok{ }\NormalTok{mph_beta0) }\OperatorTok{/}\StringTok{ }\NormalTok{mph_beta1}
+
+\NormalTok{mph_varx0 =}\StringTok{ }\NormalTok{mph_betacov[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{]}\OperatorTok{/}\NormalTok{(mph_beta1}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\NormalTok{mph_betacov[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{]}\OperatorTok{*}\NormalTok{((mph_beta0 }\OperatorTok{-}\StringTok{ }\KeywordTok{log}\NormalTok{(}\DecValTok{2}\OperatorTok{/}\DecValTok{3}\NormalTok{))}\OperatorTok{^}\DecValTok{2}\NormalTok{)}\OperatorTok{/}\NormalTok{(mph_beta1}\OperatorTok{^}\DecValTok{4}\NormalTok{) }\OperatorTok{-}
+\StringTok{              }\DecValTok{2}\OperatorTok{*}\NormalTok{mph_betacov[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{]}\OperatorTok{*}\NormalTok{(mph_beta0 }\OperatorTok{-}\StringTok{ }\KeywordTok{log}\NormalTok{(}\DecValTok{2}\OperatorTok{/}\DecValTok{3}\NormalTok{))}\OperatorTok{/}\NormalTok{(mph_beta1}\OperatorTok{^}\DecValTok{3}\NormalTok{)}
+
+
+\NormalTok{ci_mph1 =}\StringTok{ }\NormalTok{mph_fit }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{broom}\OperatorTok{::}\KeywordTok{tidy}\NormalTok{() }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{lower =}\NormalTok{ mph_x0fit }\OperatorTok{+}\StringTok{ }\KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.025}\NormalTok{) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(mph_varx0),}
+        \DataTypeTok{upper =}\NormalTok{ mph_x0fit }\OperatorTok{-}\StringTok{ }\KeywordTok{qnorm}\NormalTok{(}\FloatTok{0.025}\NormalTok{) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(mph_varx0)) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{select}\NormalTok{(term, estimate, lower, upper) }\OperatorTok{%>%}
+\StringTok{ }\KeywordTok{filter}\NormalTok{(term }\OperatorTok{==}\StringTok{ "mph_df$amount"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(}\DataTypeTok{digits =} \DecValTok{3}\NormalTok{)}
+
+\NormalTok{ci_mph1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule
+term & estimate & lower & upper\tabularnewline
+\midrule
+\endhead
+mph\_df\$amount & 0.031 & 30.583 & 49.686\tabularnewline
+\bottomrule
+\end{longtable}
+
+We need 40.134 thousands of dollars scholarship to get 40\% yield rate.
+
+\end{document}

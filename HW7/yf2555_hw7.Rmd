@@ -1,0 +1,189 @@
+---
+title: 'Homework #7'
+author: "Yihan Feng"
+date: "2021/3/25"
+output: pdf_document
+---
+
+```{r, include=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(nlme)
+library(lme4)
+```
+
+## Problem 1
+
+In a pitch study, we are interested in the relationship between pitch and politeness.There  are  two  levels  politeness  (a  formal  register:  pol,  and  an  informal  register:inf).  On top of that, we also have an additional fixed effect, gender.  Each subject was tested on several scenarios (e.g., asking a peer for a favor (informal condition) or asking a professor for a favor (formal condition)). The pitch measurements are typically correlated for the same subject and in the same scenario.
+
+```{r, message=FALSE, warning=FALSE}
+setwd("C:/Users/irene/OneDrive - cumc.columbia.edu/2021 M1 Spring/Biostatistical Methods 2/HW/HW7")
+
+polite.df = read.csv("./politeness_data.csv") %>%
+  janitor::clean_names()
+head(polite.df)
+```
+
+\newpage
+
+### (a)  Exploratory  analysis:   provide  boxplots  to  show  the  relation  between  gender/attitude and pitch (ignoring different scenarios).
+
+
+```{r, fig.align = 'center'}
+gender.plot = polite.df %>%
+  ggplot(aes(x = gender, y = frequency)) + 
+  geom_boxplot() + 
+  labs(title = "Boxplot of Gender vs. Frequency") + 
+  theme_classic()
+gender.plot
+
+
+
+attitude.plot = polite.df %>%
+  ggplot(aes(x = attitude, y = frequency)) + 
+  geom_boxplot() + 
+  labs(title = "Boxplot of attitude vs. Frequency") + 
+  theme_classic()
+attitude.plot
+```
+
+
+\newpage
+
+
+
+### (b)  Fit a mixed effects model with random intercepts for different subjects (gender and  attitude  being  the  fixed  effects). What  is  the  covariance  matrix  for a subject Yi? What  is  the  covariance  matrix  for  the  estimates  of  fixed effects (Hint: 3×3 matrix for intercept, gender and attitude)? What are the BLUPs for subject-specific intercepts? What are the residuals?
+
+```{r}
+lmm = lme(frequency ~ gender + attitude, 
+          random = ~ 1|subject,  
+          data = polite.df,
+          method = "REML")
+summary(lmm)
+```
+
+**1. Covariance matrix for a subject $Y_i$: **
+
+$$
+\begin{pmatrix}
+  \sigma_{b}^{2} + \sigma^{2} & \sigma_{b}^{2} &...& \sigma_{b}^{2} \\
+  \sigma_{b}^{2} & \sigma_{b}^{2} + \sigma^{2}  &...& \sigma_{b}^{2} \\
+  ... & ... & ... & ...\\
+  \sigma_{b}^{2} & \sigma_{b}^{2} & ...& \sigma_{b}^{2} + \sigma^{2} \\
+\end{pmatrix}
+$$
+with values in: 
+
+```{r, include=FALSE}
+sigma_b2 = 24.45803^2
+sigma2 = 29.11537^2
+sum = sigma_b2 + sigma2
+```
+
+$$
+\begin{pmatrix}
+  1445.9 & 598.2 &...& 598.2 \\
+  598.2 & 1445.9  &...& 598.2 \\
+  ... & ... & ... & ...\\
+  598.2 & 598.2 & ...& 1445.9 \\
+\end{pmatrix}
+$$
+
+\newpage
+
+**2. Covariance matrix for the estimates of fixed effects: **
+
+```{r}
+vcov(lmm, type = "fixed")
+```
+
+
+
+
+**3. BLUPs for subject specific intercepts: **
+
+```{r}
+random.effects(lmm) %>%
+  knitr::kable()
+```
+
+**4. residuals: **
+
+```{r}
+residuals(lmm)
+```
+
+
+\newpage
+
+
+### (c)  Fit a mixed effects model with intercepts for different subjects (gender, attitude  and  their  interaction  being  the  fixed  effects).  Use  likelihood  ratio  test to compare this model with the model in part (b) to determine whether the interaction term is significantly associated with pitch.
+
+```{r}
+# subjects: gender, attitude, interaction
+lmm1 = lme(frequency ~ gender + attitude + gender * attitude, 
+          random = ~ 1|subject,  
+          data = polite.df,
+          method = "REML")
+summary(lmm1)
+```
+
+
+```{r}
+# likelihood ratio test
+lmm.ml = lme(frequency ~ gender + attitude, 
+          random = ~ 1|subject,  
+          data = polite.df,
+          method = "ML")
+
+lmm1.ml = lme(frequency ~ gender + attitude + gender * attitude, 
+          random = ~ 1|subject,  
+          data = polite.df,
+          method = "ML")
+
+anova(lmm.ml, lmm1.ml)
+```
+
+From the likelihood ratio test, the p value is 0.2392 > 0.05. Therefore, we fail to reject the null hypothesis, and the smaller, without interaction model is better. Further, we can conclude that the interaction is not significantly associated with pitch. 
+
+
+\newpage 
+
+
+
+### (d)  (Optional; required for PhD or DrPH) Write out the mixed effects model with random intercepts for both subjects and scenarios (gender and attitude being the fixed effects).  Fit the model using lmer in the lme4 package. Write out the covariance matrix for a subject Yi. What is the interpretation of the coefficient for the fixed effect term attitude?
+
+```{r}
+lmer = lmer(frequency ~ gender + attitude + (1 | subject) + (1 | scenario),
+            data = polite.df)
+summary(lmer)
+```
+
+**Covariance matrix for $Y_i$:**
+
+$$
+\begin{pmatrix}
+  \sigma_{b_1}^{2} + \sigma_{b_2}^{2} + \sigma^{2} & \sigma_{b_1}^{2} + \sigma_{b_2}^{2} &...& \sigma_{b_1}^{2} + \sigma_{b_2}^{2} \\
+  \sigma_{b_1}^{2} + \sigma_{b_2}^{2} & \sigma_{b_1}^{2} + \sigma_{b_2}^{2} + \sigma^{2}  &...& \sigma_{b_1}^{2} + \sigma_{b_2}^{2} \\
+  ... & ... & ... & ...\\
+  \sigma_{b_1}^{2} + \sigma_{b_2}^{2} & \sigma_{b_1}^{2} + \sigma_{b_2}^{2} & ...& \sigma_{b_1}^{2} + \sigma_{b_2}^{2} + \sigma^{2} \\
+\end{pmatrix}
+$$
+
+with values in: 
+
+```{r, include=FALSE}
+sigma1_b2 = 224.5 + 613.2
+sigma12 = 637.8
+sum1 = sigma1_b2 + sigma12
+```
+
+$$
+\begin{pmatrix}
+  1475.5 & 837.7 &...& 837.7 \\
+  837.7 & 1475.5  &...& 837.7 \\
+  ... & ... & ... & ...\\
+  837.7 & 837.7 & ...& 1475.5 \\
+\end{pmatrix}
+$$

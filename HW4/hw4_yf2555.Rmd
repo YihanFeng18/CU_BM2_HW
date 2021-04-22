@@ -1,0 +1,180 @@
+---
+title: "P8131 HW4"
+author: "Yihan Feng"
+date: "2/19/2021"
+output: pdf_document
+---
+
+```{r include=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(dplyr)
+library(nnet)
+library(MASS)
+```
+
+```{r include=FALSE}
+setwd("C:/Users/irene/OneDrive - cumc.columbia.edu/2021 M1 Spring/Biostatistical Methods 2/HW/HW4")
+housing.df = read_csv("./housing.csv") 
+housing.df
+```
+
+### 1. Summarize the data using appropriate tables of percentages to show the pair-wise associations between the levels of satisfaction and 1) contact with other residents and 2) type of housing. Comment on patterns in the associations.\
+
+a. association between levels of satisfaction and contact\
+
+
+
+```{r warning=FALSE, message=FALSE}
+sat.contact = housing.df %>%
+  group_by(contact, satisfaction) %>%
+  summarize(n = sum(count)) %>%
+  group_by(contact) %>%
+  mutate(n_total = sum(n),
+         percentage = n * 100/ n_total) %>%
+  dplyr::select(-n_total, -n) %>%
+  spread(key = satisfaction, value = percentage) %>%
+  mutate("sat_low" = low,
+         "sat_high" = high,
+         "sat_med" = medium) %>%
+  dplyr::select(-low, -high, -medium) %>%
+  knitr::kable()
+sat.contact
+```
+
+
+From the table of percentage of satisfaction and contact with other residents, I observed that people who highly contact with other residents have higher proportion of high satisfaction. People who barely contact (low contact) with other residents tend to have either high or low satisfaction. 
+
+\newpage
+
+
+b. association between levels of satisfaction and type of housing\
+
+
+
+```{r warning=FALSE, message=FALSE}
+sat.type = housing.df %>%
+  group_by(type, satisfaction) %>%
+  summarize(n = sum(count)) %>%
+  group_by(type) %>%
+  mutate(n_total = sum(n),
+         percentage = n * 100/ n_total) %>%
+  dplyr::select(-n_total, -n) %>%
+  spread(key = satisfaction, value = percentage) %>%
+  mutate("sat_low" = low,
+         "sat_high" = high,
+         "sat_med" = medium) %>%
+  dplyr::select(-low, -high, -medium) %>%
+  knitr::kable()
+sat.type
+```
+
+From the table of percentage of satisfaction and types of housing, I observed that people who live in the tower have highest proportion of high satisfaction. People who live in house have highest proportion of low satisfaction. 
+
+\newpage
+
+### 2. Use nominal logistic regression model for the associations between response variable, the levels of satisfaction, and the other two variables. Obtain a model that summarizes the patterns in the data. Describe your fndings (the pattern in the associations, odds ratios with 95% confidence intervals, goodness-of-fit).\
+
+```{r warning=FALSE, message=FALSE}
+housing.nom = housing.df %>%
+  pivot_wider(
+    names_from = satisfaction,
+    names_prefix = "sat_",
+    values_from = count
+  )
+```
+
+```{r include=FALSE}
+housing.nom$contact = factor(housing.nom$contact, ordered = FALSE)
+housing.nom$type = factor(housing.nom$type, ordered = FALSE)
+housing.nom$contact = relevel(housing.nom$contact, "low")
+housing.nom$type = relevel(housing.nom$type, "tower")
+```
+
+```{r}
+nom.model = multinom(cbind(sat_low, sat_medium, sat_high) ~ type + contact, 
+                     data = housing.nom)
+summary(nom.model)
+```
+
+
+```{r warning=FALSE, message=FALSE}
+pihat = predict(nom.model, type = 'probs') 
+m = rowSums(housing.nom[,3:5])
+res.pearson = (housing.nom[,3:5] - pihat*m)/sqrt(pihat*m)
+
+G.stat = sum(res.pearson^2)
+pval = 1 - pchisq(G.stat,df = (6-4)*(3-1)) 
+D.stat = sum(2*housing.nom[,3:5] * log(housing.nom[,3:5]/(m*pihat)))
+```
+
+
+* Odds ratio with confidence interval: 
+
+Take low contact and housing type = tower as the reference group, the odds of **medium** satisfaction versus low satisfaction when comparing the reference group and people who: \
+* live in apartment is `r round(exp(-0.407),3)`, with 95% CI (0.476, 0.931). \
+* live in house is `r round(exp(-0.337),3)`, with 95% CI (0.501, 1.016). \
+* highly contact with other residents is `r round(exp(0.296),3)`, with 95% CI (1.042, 1.735). \
+
+
+Take low contact and housing type = tower as the reference group, the odds of **high** satisfaction versus low satisfaction when comparing the reference group and people who: \
+* live in apartment is `r round(exp(-0.642),3)`, with 95% CI (0.392, 0.707). \
+* live in house is `r round(exp(-0.946),3)`, with 95% CI (0.281, 0.536). \
+* highly contact with other residents is `r round(exp(0.328),3)`, with 95% CI (1.102, 1.751). \
+
+* Goodness of Fit: 
+
+The deviance of this model is `r D.stat`. The deviance statistics should approximately follow chi-squared distribution with degree of freedom 4, with the critical value `r qchisq(0.95, 4)`. Therefore, it fails to reject the null hypothesis at 0.05 significance level, and we are able to conclude that the model fits the data well.  
+
+\newpage
+
+
+### 3. As the response has ordinal categories, fit proportional odds model to the data that include the same variables as used in the nominal logistic model obtained in (ii). What does the fitted model tell?\
+
+```{r warning=FALSE, message=FALSE}
+freq = c(housing.nom$sat_low, housing.nom$sat_medium, housing.nom$sat_high)
+res = c(rep(c("sat_low","sat_medium","sat_high"), c(6,6,6)))
+res = factor(res, levels = c("sat_low","sat_medium","sat_high"), ordered = T)
+housing.ord = data.frame(res = res, type = rep(housing.nom$type, 3), contact = rep(housing.nom$contact, 3),freq = freq) %>%
+  mutate(res = factor(res, levels = c("sat_low","sat_medium","sat_high"), ordered = TRUE))
+housing.ord
+
+housing.polr = polr(res ~ type + contact, data = housing.ord, weights = freq)
+summary(housing.polr) 
+```
+
+\
+
+```{r warning=FALSE, message=FALSE}
+pihat.ord = predict(housing.polr, housing.nom, type = 'probs') 
+m.ord = rowSums(cbind(housing.nom$sat_high, housing.nom$sat_medium, housing.nom$sat_low))
+res.pearson.ord = (housing.nom[,3:5] - pihat.ord*m.ord)/sqrt(pihat.ord*m.ord)
+
+
+G.stat.ord = sum(res.pearson.ord^2)
+pval.ord = 1 - pchisq(G.stat.ord,df = (6-4)*(3-1)) 
+D.stat.ord = sum(2*housing.nom[,3:5] * log(housing.nom[,3:5]/(m.ord*pihat.ord)))
+```
+
+* Odds ratio with confidence interval: 
+
+Take low contact and housing type = tower as the reference group, the odds of people have high and medium satisfaction versus low satisfaction (or high satisfaction versus medium and low satisfactions) when comparing the reference group and people who: \
+* live in apartment is `r round(exp(0.5009),3)`, with 95% confidence interval (1.313, 2.075). \
+* live in house is `r round(exp(0.7362),3)`, with 95% confidence interval (1.631, 2.672). \
+* highly contact with other residents is`r round(exp(0.2524),3)`, with 95% confidence interval (0.647, 0.932). 
+
+
+* Goodness of Fit: 
+
+The deviance of this model is `r D.stat.ord`. The deviance statistics should approximately follow chi-squared distribution with degree of freedom 7, with the critical value `r qchisq(0.95, 7)`. Therefore, it fails to reject the null hypothesis at 0.05 significance level, and we are able to conclude that the model fits the data well. 
+
+\newpage
+
+
+### 4. Calculate Pearson residuals from the proportional odds model for ordinal response to find where the largest discrepancies are between the observed frequencies and expected frequencies estimated from the model.
+
+```{r warning=FALSE, message=FALSE}
+res.pearson.ord = (housing.nom[,3:5] - pihat.ord*m.ord)/sqrt(pihat.ord*m.ord)
+res.pearson.ord 
+```
+
+According to the table, the largest discrepancy is the housing type = House, with high contact and high satisfaction. The Pearson residuals value is -1.478. 

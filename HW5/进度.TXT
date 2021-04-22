@@ -1,0 +1,9 @@
+https://github.com/mparker7/p8131_hw5_mp3745/blob/master/p8131_hw5_mp3745.pdf
+https://github.com/valuntiny/p8131_HW5/blob/master/HW5_answer.pdf
+
+Q1
+	对一下GOF
+	对一下confidence interval
+
+Q2
+	还没做

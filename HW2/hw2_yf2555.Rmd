@@ -1,0 +1,223 @@
+---
+title: "P8131 Assignment 2"
+author: "Yihan Feng (yf2555)"
+date: "2/9/2021"
+output: html_document
+---
+
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(dplyr)
+library("ResourceSelection")
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = F, 
+                      warning = F)
+```
+
+<br>
+
+# Problem 1
+
+```{r, include = FALSE}
+dose = 0:4
+
+dying_alive = tibble(
+  dying_n = c(2,8,15,23,27),
+  alive_n = 30 - dying_n
+) %>%
+  as.matrix()
+```
+
+<br>
+
+### a. Fill out the table and give comments. 
+
+```{r}
+# fit models
+fit_logit = glm(dying_alive ~ dose, family = binomial(link = 'logit'))
+fit_probit = glm(dying_alive ~ dose, family = binomial(link = 'probit'))
+fit_clog = glm(dying_alive ~ dose, family = binomial(link = 'cloglog'))
+
+# CI for beta
+ci_logit = fit_logit %>%
+  broom::tidy() %>%
+ mutate(lower = estimate - 1.96 * std.error,
+        upper = estimate + 1.96 * std.error) %>%
+ select(term, estimate, lower, upper) %>%
+ filter(term == "dose")
+
+ci_probit = fit_probit %>%
+ broom::tidy() %>%
+ mutate(lower = estimate - 1.96 * std.error,
+        upper = estimate + 1.96 * std.error) %>%
+ select(term, estimate, lower, upper) %>%
+ filter(term == "dose")
+ 
+ci_clog = fit_clog %>%
+ broom::tidy() %>%
+ mutate(lower = estimate - 1.96 * std.error,
+        upper = estimate + 1.96 * std.error) %>%
+ select(term, estimate, lower, upper) %>%
+ filter(term == "dose")
+ 
+# p(dying|x=0.01)
+new_dose <- data.frame(dose = 0.01)
+
+predict_logit = predict(fit_logit, new_dose, type = "response")
+predict_probit = predict(fit_probit, new_dose, type = "response")
+predict_clog = predict(fit_clog, new_dose, type = "response")
+
+# set up the table
+table_a = tibble(
+ model = c("Logit", "Probit", "C-log-log"),
+ beta_estimate = c(fit_logit$coefficients[2], fit_probit$coefficients[2], fit_clog$coefficients[2]),
+ beta_cI_lower = c(ci_logit$lower, ci_probit$lower, ci_clog$lower),
+ beta_CI_upper = c(ci_logit$upper, ci_probit$upper, ci_clog$upper),
+ Deviance = c(fit_logit$deviance, fit_probit$deviance, fit_clog$deviance),
+ p_dying_x_0.01 = c(predict_logit, predict_probit, predict_clog)
+) %>%
+  knitr::kable(digits = 3)
+
+table_a
+```
+
+
+According to the table, I noticed that: 
+
+* All estimates of $\beta$ are positive, which means that the risk of dying increases with the increase of doses. The logit model has the highest value, and the probit model has the lowest value. 
+
+* All confidence intervals of $\beta$ do not include zero, which corresponds to the conclusion that the risk of dying increases with the increase of doses. 
+
+* The c-log-log model has the highest deviance, and the probit model has the lowest deviance. It indicates that the logit and probit may better fit the data set. 
+
+* When the dose is decreased to 0.01, the three models provide similar probabilities of dying. 
+
+
+<br>
+<br>
+
+### b. Suppose that the dose level is in natural logarithm scale, estimate LD50 with 90% confidence interval
+
+```{r}
+#logit model
+
+logit_beta0 = fit_logit$coefficients[1]
+logit_beta1 = fit_logit$coefficients[2]
+logit_betacov = vcov(fit_logit)
+logit_x0fit = -logit_beta0 / logit_beta1
+logit_estimate = exp(logit_x0fit)
+logit_varx0 = logit_betacov[1,1] / (logit_beta1^2) + logit_betacov[2,2] * (logit_beta0^2) / (logit_beta1^4) - 2 * logit_betacov[1,2] * logit_beta0/(logit_beta1^3)
+logit_CI = exp(logit_x0fit + c(qnorm(0.05), -qnorm(0.05)) * sqrt(logit_varx0))
+ 
+
+#probit model
+
+probit_beta0 = fit_probit$coefficients[1]
+probit_beta1 = fit_probit$coefficients[2]
+probit_betacov = vcov(fit_probit)
+probit_x0fit = -probit_beta0 / probit_beta1
+probit_estimate = exp(probit_x0fit) 
+probit_varx0 = probit_betacov[1,1] / (probit_beta1^2) + probit_betacov[2,2] * (probit_beta0^2) / (probit_beta1^4) - 2 * probit_betacov[1,2] * probit_beta0 / (probit_beta1^3)
+probit_CI = exp(probit_x0fit + c(qnorm(0.05), -qnorm(0.05)) * sqrt(probit_varx0))
+
+
+#cloglog model
+
+clog_beta0 = fit_clog$coefficients[1]
+clog_beta1 = fit_clog$coefficients[2]
+clog_betacov = vcov(fit_clog)
+clog_x0fit = -clog_beta0 / clog_beta1
+clog_estimate = exp(clog_x0fit) 
+clog_varx0 = clog_betacov[1,1] / (clog_beta1^2) + clog_betacov[2,2] * (clog_beta0^2) / (clog_beta1^4) - 2 * clog_betacov[1,2] * clog_beta0 / (clog_beta1^3)
+clog_CI = exp(clog_x0fit + c(qnorm(0.05), -qnorm(0.05)) * sqrt(clog_varx0))
+
+
+#set up table
+table_b = tibble(
+ model = c("Logit", "Probit", "C-log-log"),
+ beta_estimate = c(logit_estimate, probit_estimate, clog_estimate),
+ beta_cI_lower = c(logit_CI[1], probit_CI[1], clog_CI[1]),
+ beta_CI_upper = c(logit_CI[2], probit_CI[2], clog_CI[2])
+) %>%
+  knitr::kable(digits = 3)
+
+table_b
+```
+
+
+<br>
+<br>
+<br>
+<br>
+
+## Problem 2
+
+<br>
+
+### a. How does the model fit the data? 
+
+```{r}
+mph_df = data.frame(amount = seq(from = 10, to = 90, by = 5), 
+                      offers = c(4, 6, 10, 12, 39, 36, 22, 14, 10, 12, 8, 9, 3, 1, 5, 2, 1), 
+                      enrolls = c(0, 2, 4, 2, 12, 14, 10, 7, 5, 5, 3, 5, 2, 0, 4, 2, 1))
+
+resp = cbind(mph_df$enrolls, mph_df$offers - mph_df$enrolls)
+
+mph_fit = glm(resp ~ mph_df$amount, family = binomial(link = 'logit'))
+mph_hl = hoslem.test(mph_fit$y, fitted(mph_fit), g = 10)
+
+mph_hl
+```
+
+From the Hosmer-Lemeshow test, the p value is 0.991 ( >0.05). Therefore, it fails to reject, and the model fit the data well. 
+
+<br>
+<br>
+
+### b. How do you interpret the relationship between the scholarship amount and enrollment rate? What is 95% CI? 
+
+```{r}
+beta_mph = mph_fit$coefficients[2]
+
+ci_mph = mph_fit %>%
+  broom::tidy() %>%
+  mutate(lower = beta_mph - 1.96 * std.error,
+        upper = beta_mph + 1.96 * std.error) %>%
+ select(term, estimate, lower, upper) %>%
+ filter(term == "mph_df$amount") %>%
+  knitr::kable(digits = 3)
+
+ci_mph
+```
+
+<br>
+<br>
+
+### c. How much scholarship should we provide to get 40% yield rate? What is the 95% CI? 
+
+```{r}
+mph_beta0 = mph_fit$coefficients[1]
+mph_beta1 = mph_fit$coefficients[2]
+
+mph_betacov = vcov(mph_fit) 
+
+mph_x0fit = (log(0.4/0.6) - mph_beta0) / mph_beta1
+
+mph_varx0 = mph_betacov[1,1]/(mph_beta1^2) + mph_betacov[2,2]*((mph_beta0 - log(2/3))^2)/(mph_beta1^4) -
+              2*mph_betacov[1,2]*(mph_beta0 - log(2/3))/(mph_beta1^3)
+
+
+ci_mph1 = mph_fit %>%
+  broom::tidy() %>%
+  mutate(lower = mph_x0fit + qnorm(0.025) * sqrt(mph_varx0),
+        upper = mph_x0fit - qnorm(0.025) * sqrt(mph_varx0)) %>%
+ select(term, estimate, lower, upper) %>%
+ filter(term == "mph_df$amount") %>%
+  knitr::kable(digits = 3)
+
+ci_mph1
+```
+
+We need `r round(mph_x0fit, 3)` thousands of dollars scholarship to get 40% yield rate. 
+

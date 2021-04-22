@@ -1,0 +1,100 @@
+---
+title: "Homework 8"
+author: "Yihan Feng"
+output: pdf_document
+---
+
+```{r, include=FALSE}
+setwd("C:/Users/irene/OneDrive - cumc.columbia.edu/2021 M1 Spring/Biostatistical Methods 2/HW/HW8")
+library(tidyverse)
+library(readxl)
+library(gee)
+library(lme4)
+library(nlme)
+```
+
+The data (HEALTH.xlsx) are from a randomized, controlled trial among women of childbearing age to evaluate the effects of an educational intervention. One response variable of interest is the participants self-rating of health status as either good or poor. The researchers would like to assess the effect of the intervention on self-rated health across the follow-up period, as well as whether these effects are inuenced by the mothers age. There are n = 80 women enrolled in this trial. These data
+were measured at 4 points in time: randomization, 3 months, 6 months, and 12 months post-randomization.
+
+
+```{r}
+health.df = read_excel("./HW8-HEALTH.xlsx") %>%
+  janitor::clean_names() %>%
+  rename(trt = txt) %>%
+  mutate(trt = as.factor(trt),
+         health = as.numeric(health == "Good"),
+         time = as.integer(time))
+health.df1 = health.df %>%
+  filter(!id %in% names(which(table(health.df$id) == 1))) # remove the participants with randomization only
+
+
+```
+
+\newpage
+
+### (a) Evaluate the bivariate, cross-sectional relationship between randomized group assignment and participants health self-rating at the time of randomization. Interpret and discuss these findings.
+
+```{r}
+health.df.a = health.df %>%
+  filter(time == 1)
+glm = glm(health ~ trt,
+                  data = health.df.a,
+                  family = binomial(link = "logit"))
+summary(glm)
+```
+
+The odds ratio of self-reporting "good" health status at randomization (baseline) is `r round(exp(glm$coefficients[2]), 3)`, for intervention group vs. control group. However, the p value for the coefficient is 0.486 > 0.05; therefore, we are 95% confident to conclude that there is not enough evidence to support association between treatment group assignment and health status at randomization. 
+
+\newpage
+
+### (b) Perform a longitudinal data analysis across all study follow-up visits (but not at randomization) to describe the relationship of the participants self-ratings as a function of the effects of health self-rating at the baseline, treatment group, month post randomization, and age group as predictors. Fit a GEE with unstructured correlation structure. Interpret your results.
+
+
+```{r}
+resp = subset(health.df1, time > "1")
+resp$baseline = rep(subset(health.df1, time == "1")$health, as.numeric(table(resp$id)))
+
+gee = gee(health ~ baseline + trt + time + agegroup,
+          data = resp,
+          family = "binomial",
+          corstr = "unstructured",
+          scale.fix = FALSE)
+summary(gee)
+```
+
+* The log odds ratio of participants self-rating "good" vs. "poor" is `r round(exp(gee$coefficients[2]), 3)`, between participants self-rating "good" or "poor" at baseline, if take average among all measurements and all subjects within the same subgroup. 
+
+* The log odds ratio of participants self-rating "good" vs. "poor" is `r round(exp(gee$coefficients[3]), 3)`, between participants in "intervention" or "control" treatment group, if take average among all measurements and all subjects within the same subgroup. 
+
+* The log odds ratio of participants self-rating "good" vs. "poor" is `r round(exp(gee$coefficients[4]), 3)`, for per 3 months after randomization change, if take average among all measurements and all subjects within the same subgroup. 
+
+* The log odds ratio of participants self-rating "good" vs. "poor" is `r round(exp(gee$coefficients[5]), 3)`, between 25-34 age group vs. 15-24 age group, if take average among all measurements and all subjects within the same subgroup. 
+
+* The log odds ratio of participants self-rating "good" vs. "poor" is `r round(exp(gee$coefficients[5]), 3)`, between 35+ age group vs. 15-24 age group, if take average among all measurements and all subjects within the same subgroup. 
+
+\newpage
+
+### (c) Fit a generalized linear mixed effects model with subject-specific random intercepts. Interpret your estimates. How are the interpretations different from the GEE model?
+
+```{r}
+glmm = glmer(health ~ baseline + trt + time + agegroup + (1 | id),
+             data = resp,
+             family = binomial)
+summary(glmm)
+```
+
+Interpretation: 
+
+* The log odds ratio of participants self-rating "good" vs. "poor" is `r round(exp(0.2021), 3)`, for per 3 months after randomization change, if take average among all measurements and all subjects within the same subgroup. 
+
+* `r 2.781` is the average (conditional) log odds ratio of any paired subjects who only differ by the baseline self-reporting health status "good" or "poor". 
+
+* `r 3.423` is the average (conditional) log odds ratio of any paired subjects who only differ by the treatment group (intervention vs. control). 
+
+* `r 2.25` is the average (conditional) log odds ratio of any paired subjects who only differ by the age group (age group 25-34 vs. 15-24)
+
+* `r 2.25` is the average (conditional) log odds ratio of any paired subjects who only differ by the age group (age group 35+ vs. 15-24)
+
+Difference between the two models interpretations: 
+
+GLMM model interpret the parameter as population average. In this case, it only interpret the time variable as within subject change, while interpret other variables as between subject change. 

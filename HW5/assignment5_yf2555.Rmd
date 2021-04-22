@@ -1,0 +1,181 @@
+---
+title: "P8131 Assignment 5"
+author: "Yihan Feng"
+date: "2021/3/6"
+output: pdf_document
+---
+
+```{r include=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(dplyr)
+library(pscl)
+setwd("C:/Users/irene/OneDrive - cumc.columbia.edu/2021 M1 Spring/Biostatistical Methods 2/HW/HW5")
+```
+## Problem 1
+
+```{r warning=FALSE, message=FALSE}
+crab.df = read.csv("./data/HW5-crab.txt", sep = "") %>%
+  janitor::clean_names()
+```
+
+### (a) Fit a Poisson model (M1) with log link with W as the single predictor. Check the goodness of fit and interpret your model.
+
+```{r}
+crab.m1 = glm(sa ~ w,
+              family = poisson(link = log),
+              data = crab.df)
+summary(crab.m1)
+```
+
+\newpage
+
+**Goodness of fit: **
+
+```{r}
+G1 = sum(residuals(crab.m1, type = 'pearson')^2)
+1 - pchisq(G1, df = 171)
+```
+
+P value is less than 0.05, so it rejects the null hypothesis at 0.05 significance level, and conclude that model 1 is poorly fitted. 
+
+**Model interpretation:**
+
+The relative risk of satellites number per unit change increases the carapace width is `r exp(crab.m1$coefficients[2])`, holding the other variables fixed. 
+
+\newpage
+
+### (b) Fit a model (M2) with W and Wt as predictors. Compare it with the model in (a). Interpret your results.
+
+```{r}
+crab.m2 = glm(sa ~ w + wt,
+              family = poisson(link = log),
+              data = crab.df)
+summary(crab.m2)
+```
+
+**Goodness of fit (M1 and M2):**
+
+```{r}
+cm12.dtest = crab.m1$deviance - crab.m2$deviance
+cm12.dtest.p = 1 - pchisq(cm12.dtest, 1)
+```
+
+Since p value of deviance test is `r cm12.dtest.p` < 0.05, at 95% confidence, we are able to reject the null hypothesis, and conclude that model 2 is better fitted. 
+
+**Model interpretation:**
+
+* The relative risk of satellites number per unit change increases the carapace width is `r exp(crab.m2$coefficients[2])`, holding the other variables fixed. 
+
+* The relative risk of satellites number per unit change increases the weight is `r exp(crab.m2$coefficients[3])`, holding the other variables fixed. 
+
+\newpage
+
+### (c) Check over dispersion in M2. Interpret the model after adjusting for over dispersion.
+
+```{r}
+phi=G1 / (173 - 3)
+phi
+```
+
+As $\phi$ is `r phi`, there exists over dispersion in M2. 
+
+```{r}
+summary(crab.m2, dispersion = phi)
+```
+
+**Model interpretation:**
+
+* The relative risk of satellites number per unit change increases the carapace width is `r exp(crab.m2$coefficients[2])`, holding the other variables fixed. 
+
+* The relative risk of satellites number per unit change increases the weight is `r exp(crab.m2$coefficients[3])`, holding the other variables fixed. 
+
+\newpage
+
+## Problem 2
+
+```{r warning=FALSE, message=FALSE}
+para.df = read.csv("./data/HW5-parasite.txt", sep = "") %>%
+  janitor::clean_names() %>%
+  mutate(area = as.factor(area),
+        year = as.factor(year)) %>%
+  select(year, intensity, length, area)
+```
+
+### (a) Fit a Poisson model with log link to the data with area, year, and length as predictors. Interpret each model parameter.
+
+```{r}
+para.m1 = glm(intensity ~ area + length + year,
+              family = poisson(link = log),
+              data = para.df)
+summary(para.m1)
+```
+
+\newpage
+
+**Model interpretation:**
+
+* The relative risk of parasite intensity in area 2 vs. area 1 is `r exp(para.m1$coefficients[2])`, holding the other variables fixed. 
+
+* The relative risk of parasite intensity in area 3 vs. area 1 is `r exp(para.m1$coefficients[3])`, holding the other variables fixed. 
+
+* The relative risk of parasite intensity in area 4 vs. area 1 is `r exp(para.m1$coefficients[4])`, holding the other variables fixed. 
+
+* The relative risk of parasite intensity per unit change increases the length is `r exp(para.m1$coefficients[5])`, holding the other variables fixed. 
+
+* The relative risk of parasite intensity in year 2000 vs. year 1999 is `r exp(para.m1$coefficients[6])`, holding the other variables fixed. 
+
+* The relative risk of parasite intensity in year 2001 vs. year 1999 is `r exp(para.m1$coefficients[7])`, holding the other variables fixed. 
+
+\newpage
+
+### (b) Test for goodness of fit of the model in (a) and state conclusions.
+
+```{r}
+G2 = sum(residuals(para.m1, type = 'pearson')^2)
+1 - pchisq(G2, df = 171)
+```
+
+P value is less than 0.05, so it rejects the null hypothesis at 0.05 significance level, and conclude that model 1 is poorly fitted. 
+
+\newpage
+
+### (c) Researchers suspect that there may be two strains of fish, one that is susceptible to parasites and one that is not. Without knowing which fish are susceptible, this could be regarded as a zero-inated model. Building on the model in (a) (using the same predictors), fit an appropriate model to the data that can account for extra zeros. Provide an interpretation for each model parameter in terms of the problem.
+
+```{r}
+para.m2 <- zeroinfl(intensity ~ length + year + area, data = para.df) 
+summary(para.m2)
+```
+
+\newpage
+
+**Poisson model:** 
+
+* In the fish that are susceptible to parasites, the relative risk of parasite intensity per unit change increases the length is `r exp(para.m2$coefficients$count[2])`, holding the other variables fixed. 
+
+* In the fish that are susceptible to parasites, the relative risk of parasite intensity in year 2000 vs. year 1999 is `r exp(para.m2$coefficients$count[3])`, holding the other variables fixed. 
+
+* In the fish that are susceptible to parasites, the relative risk of parasite intensity in year 2001 vs. year 1999 is `r exp(para.m2$coefficients$count[4])`, holding the other variables fixed. 
+
+* In the fish that are susceptible to parasites, the relative risk of parasite intensity in area 2 vs. area 1 is `r exp(para.m2$coefficients$count[5])`, holding the other variables fixed. 
+
+* In the fish that are susceptible to parasites, the relative risk of parasite intensity in area 3 vs. area 1 is `r exp(para.m2$coefficients$count[6])`, holding the other variables fixed.
+
+* In the fish that are susceptible to parasites, the relative risk of parasite intensity in area 4 vs. area 1 is `r exp(para.m2$coefficients$count[7])`, holding the other variables fixed.
+
+
+**Zero-inflation model:**
+
+* In the fish that are susceptible to parasites, the odds ratio of parasite intensity per unit change increases the length is `r exp(para.m2$coefficients$zero[2])`, holding the other variables fixed. 
+
+* In the fish that are susceptible to parasites, the odds ratio of parasite intensity in year 2000 vs. year 1999 is `r exp(para.m2$coefficients$zero[3])`, holding the other variables fixed. 
+
+* In the fish that are susceptible to parasites, the odds ratio of parasite intensity in year 2001 vs. year 1999 is `r exp(para.m2$coefficients$zero[4])`, holding the other variables fixed. 
+
+* In the fish that are susceptible to parasites, the odds ratio of parasite intensity in area 2 vs. area 1 is `r exp(para.m2$coefficients$zero[5])`, holding the other variables fixed. 
+
+* In the fish that are susceptible to parasites, the odds ratio of parasite intensity in area 3 vs. area 1 is `r exp(para.m2$coefficients$zero[6])`, holding the other variables fixed.
+
+* In the fish that are susceptible to parasites, the odds ratio of parasite intensity in area 4 vs. area 1 is `r exp(para.m2$coefficients$zero[7])`, holding the other variables fixed.
+
+
+
