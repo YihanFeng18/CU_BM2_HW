@@ -1,5 +1,4 @@
-# biostat_method_2_hw
-Homework collection of Biostatistical Methods 2 (P8131)
+# Homework collection of Biostatistical Methods 2 (P8131)
 
 ## Course Description
 Regression analysis is widely used in biomedical research. Non-continuous (e.g., binary or count-valued) responses, correlated observations, and censored data are frequently encountered in regression analysis. This course will introduce advanced statistical methods to address these practical problems. 
